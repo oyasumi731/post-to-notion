@@ -1,0 +1,23 @@
+{
+    "name": "post-to-notion",
+    "short_name": "post2notion",
+    "description": "",
+    "version": "0.1.0",
+    "manifest_version": 3,
+    "minimum_chrome_version": "88",
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "permissions": [
+        "tabs",
+        "contextMenus",
+        "storage"
+    ],
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "host_permissions": [
+        "https://api.notion.com/v1/*"
+    ]
+}

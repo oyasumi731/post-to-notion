@@ -1,0 +1,108 @@
+@startuml Post-To-Notion
+
+title Post-to-Notionの全体像
+
+'クラスの定義'
+package UX {
+    'フロントエンド'
+    package Presentation{
+        class OptionPage {
+            - token
+            - pageInfo
+            + handleConfirmConnection()
+            + handleSaveSettings()
+            + handleGetPageList()
+        }
+
+        class ContextMenu{
+            - string description
+            + handlePost()
+        }
+    }
+
+    'バックエンド'
+    package Infrastructure{
+        class Background{
+            - Config config
+            - ServiceRepository repositry
+            + postToNotion(string description)
+            + confirmConnection(string token)
+            + saveSettings(Config config)
+            + GetPageList()
+        }
+
+        class ServiceRepository{
+            - IApplicationService applicationService
+            - IExtensionService extensionService
+        }
+
+        class ExtensionServiceImpl{
+            + post(PostRequest request) -> PostResult
+            + canConnectBy(string token) -> bool
+            + GetWriteablePageList() -> List
+        }
+
+        class ApplicationServiceImpl{
+            + save(string key, object setting)
+            + load(string key) -> object
+        }
+    }
+}
+
+package Service{
+    interface IApplicationService{
+        + save(string key, object setting)
+        + load(string key) -> object
+    }
+}
+
+'ドメイン'
+package Domain{
+    class Config{
+        + pageTitle
+        + pageId
+        + token
+    }
+
+    interface IExtensionService{
+        + post(PostRequest request) -> PostResult
+        + canConnectBy(string token) -> bool
+        + GetWriteablePageList() -> List
+    }
+
+    class PostRequest{
+        + postId
+        + title
+        + url
+        + description
+    }
+    class PostResult{
+        + isSuccess
+    }
+}
+
+'クラスの関連'
+OptionPage ..> Background
+
+OptionPage ..> Config
+ServiceRepository o-- ApplicationServiceImpl
+ServiceRepository o-- ExtensionServiceImpl
+Background o-- ServiceRepository
+Background o-- Config
+Background o-- ContextMenu
+ServiceRepository ..> IApplicationService
+ServiceRepository ..> IExtensionService
+Background ..> PostRequest
+Background ..> PostResult
+
+
+IExtensionService <|.. ExtensionServiceImpl
+IApplicationService <|.. ApplicationServiceImpl
+
+IExtensionService ..> PostRequest
+IExtensionService ..> PostResult
+
+
+
+
+@enduml
